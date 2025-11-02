@@ -1,60 +1,51 @@
-import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css";
+'use strict';
 
-const galleryElem = document.querySelector('.gallery');
-const loaderElem = document.querySelector('.loader');
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
-export function createGallery(images) {
-  const markup = templatePictures(images);
-    galleryElem.innerHTML = markup;
-    gallery.refresh();
-}
-
-function templatePictures(posts) {
-  return posts.map(templatePicture).join('');
-}
-
-function templatePicture(
-  { likes, views, comments, downloads, largeImageURL, webformatURL, tags },
-  i
-) {
-  return `<li class="gallery-item"><a class="gallery-link" href="${largeImageURL}">
-          <img class="image-item" src="${webformatURL}" alt="${tags}" /></a>
-          <div class="text-item">
-            <div class="single-text">
-              <h5>Likes</h5>
-              <p>${likes}</p>
-            </div>
-            <div class="single-text">
-              <h5>Views</h5>
-              <p>${views}</p>
-            </div>
-            <div class="single-text">
-              <h5>Comments</h5>
-              <p>${comments}</p>
-            </div>
-            <div class="single-text">
-              <h5>Downloads</h5>
-              <p>${downloads}</p>
-            </div>
-          </div>
-        </li>`;
-}
-let gallery = new SimpleLightbox('.gallery-link', {
-  captions: true,
+const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
+const loader = document.querySelector('.loader');
 
+export function createGallery(images) {
+  const galleryContainer = document.querySelector('.gallery');
+  const markup = images
+    .map(
+      image => `
+    <li class="gallery__item">
+      <a class="gallery__link" href="${image.largeImageURL}">
+        <img class="gallery__image" src="${image.webformatURL}" alt="${image.tags}" />
+      </a>
+      <div class="image__info">
+        <p><strong>Likes:</strong> ${image.likes}</p>
+        <p><strong>Views:</strong> ${image.views}</p>
+        <p><strong>Comments:</strong> ${image.comments}</p>
+        <p><strong>Downloads:</strong> ${image.downloads}</p>
+      </div>
+    </li>
+  `
+    )
+    .join('');
+
+  galleryContainer.insertAdjacentHTML('beforeend', markup);
+  lightbox.refresh();
+}
 
 export function clearGallery() {
-    galleryElem.innerHTML = '';
+  const galleryContainer = document.querySelector('.gallery');
+  galleryContainer.innerHTML = '';
 }
 
 export function showLoader() {
-    loaderElem.style.display = 'flex';
+  if (loader) {
+    loader.classList.remove('hidden');
+  }
 }
 
 export function hideLoader() {
-    loaderElem.style.display = 'none';
+  if (loader) {
+    loader.classList.add('hidden');
+  }
 }
